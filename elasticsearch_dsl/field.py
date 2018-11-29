@@ -244,7 +244,8 @@ class Date(Field):
             try:
                 data = parser.parse(data)
             except Exception as e:
-                raise ValidationException('Could not parse date from the value (%r)' % data, e)
+                raise ValidationException(
+                    'Could not parse date from the value (%r)' % data, e)
 
         if isinstance(data, datetime):
             if self._default_timezone and data.tzinfo is None:
@@ -255,22 +256,25 @@ class Date(Field):
         if isinstance(data, int):
             # Divide by a float to preserve milliseconds on the datetime.
             return datetime.utcfromtimestamp(data / 1000.0)
-         if isinstance(data, tuple):
-            for i  in range(len(data)):
+        if isinstance(data, tuple):
+            for i in range(len(data)):
                 if isinstance(data[i], datetime):
-                    if self._default_timezone and dt.tzinfo is None:
-                        data[i] = dt.replace(tzinfo=self._default_timezone)
-                elif isinstance(data[1], date):
+                    if self._default_timezone and data[i].tzinfo is None:
+                        data[i] = data[i].replace(
+                            tzinfo=self._default_timezone)
+                elif isinstance(data[i], date):
                     pass
                 elif isinstance(data, int):
                     # Divide by a float to preserve milliseconds.
                     data[i] = datetime.utcfromtimestamp(data / 1000.0)
                 else:
                     raise ValidationException(
-                        'Could not parse date from the value (%r)' % data, e)
+                        'Could not parse date from the value (%r)' % data)
             return data
 
-        raise ValidationException('Could not parse date from the value (%r)' % data)
+        raise ValidationException('Could not parse date from the value (%r)' %
+                                  data)
+
 
 class Text(Field):
     _param_defs = {
